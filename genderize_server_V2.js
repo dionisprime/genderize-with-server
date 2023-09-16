@@ -1,45 +1,31 @@
 const http = require('http'); // встроенный модуль http
 const server = http.createServer().listen(3000); // создание сервера, порт 3000
 
-server.on('request', (req, res) => {
-    const userName = getName(req, res);
+server.on('request', async (req, res) => {
+    try {
+        let userName =
+            req.url === '/favicon.ico' ? res.end() : req.url.substring(1);
 
-    checkGender(userName, res);
+        await checkGender(userName, res);
+    } catch (error) {
+        console.error('Error: ', error.message);
+    }
 });
 
-function getName(req, res) {
-    let userName;
-    if (req.url === '/favicon.ico') {
-        return res.end(); // Игнорируем запросы на favicon.ico
+async function checkGender(name, res) {
+    const data = await getGenderInfoByName(name);
+    if (data.gender === null) {
+        console.log(`The gender for "${data.name}" could not be determined.`);
+        res.end(`The gender for "${data.name}" could not be determined.`);
+    } else {
+        console.log(`${name} is ${data.gender}.`);
+        res.end(`${data.name} is ${data.gender}`);
     }
-    return (userName = req.url.substring(1));
 }
 
-function checkGender(userName, res) {
+async function getGenderInfoByName(name) {
     const serverUrl = 'https://api.genderize.io';
-    const url = `${serverUrl}?name=${userName}`;
-    fetch(url)
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error('Нет ответа');
-            }
-            return response.json();
-        })
-        .then((data) => {
-            if (data.gender === null) {
-                console.log(
-                    `The gender for "${data.name}" could not be determined.`
-                );
-                res.end(
-                    `The gender for "${data.name}" could not be determined.`
-                );
-            } else {
-                console.log(`${data.name} is ${data.gender}`);
-                res.end(`${data.name} is ${data.gender}`);
-            }
-        })
-        .catch((error) => {
-            console.error(error);
-            res.end('Ошибка!');
-        });
+    const url = `${serverUrl}?name=${name}`;
+    const response = await fetch(url);
+    return (await response.json()) || {};
 }
