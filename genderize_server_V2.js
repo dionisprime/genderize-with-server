@@ -2,7 +2,6 @@ const http = require('http'); // встроенный модуль http
 const server = http.createServer().listen(3000); // создание сервера, порт 3000
 
 server.on('request', (req, res) => {
-    console.log('res: ', res);
     const userName = getName(req, res);
 
     checkGender(userName, res);
