@@ -18,8 +18,17 @@ server.on('request', (req, res) => {
             return response.json();
         })
         .then((data) => {
-            console.log(`${data.name} is ${data.gender}`);
-            res.end(`${data.name} is ${data.gender}`);
+            if (data.gender === null) {
+                console.log(
+                    `The gender for "${data.name}" could not be determined.`
+                );
+                res.end(
+                    `The gender for "${data.name}" could not be determined.`
+                );
+            } else {
+                console.log(`${data.name} is ${data.gender}`);
+                res.end(`${data.name} is ${data.gender}`);
+            }
         })
         .catch((error) => {
             console.error(error);
