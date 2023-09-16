@@ -2,14 +2,22 @@ const http = require('http'); // встроенный модуль http
 const server = http.createServer().listen(3000); // создание сервера, порт 3000
 
 server.on('request', (req, res) => {
+    const userName = getName(req, res);
+
+    checkGender(userName, res);
+});
+
+function getName(req, res) {
     let userName;
     if (req.url === '/favicon.ico') {
         return res.end(); // Игнорируем запросы на favicon.ico
     }
-    userName = req.url.substring(1);
+    return (userName = req.url.substring(1));
+}
+
+function checkGender(userName, res) {
     const serverUrl = 'https://api.genderize.io';
     const url = `${serverUrl}?name=${userName}`;
-
     fetch(url)
         .then((response) => {
             if (!response.ok) {
@@ -34,4 +42,4 @@ server.on('request', (req, res) => {
             console.error(error);
             res.end('Ошибка!');
         });
-});
+}
