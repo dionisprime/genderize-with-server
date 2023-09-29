@@ -1,10 +1,17 @@
 const http = require('http'); // встроенный модуль http
-const server = http.createServer().listen(3000); // создание сервера, порт 3000
+const server = http.createServer().listen(3000, () => {
+    console.log(
+        'Enter http://localhost:3000/name in the browser - where "name" is the name of the person being checked'
+    );
+}); // создание сервера, порт 3000
 
 server.on('request', async (req, res) => {
     try {
-        let userName =
-            req.url === '/favicon.ico' ? res.end() : req.url.substring(1);
+        let userName;
+        if (req.url === '/favicon.ico') {
+            return res.end(); // Игнорируем запросы на favicon.ico
+        }
+        userName = req.url.substring(1);
 
         const result = await checkGender(userName);
 
@@ -27,7 +34,7 @@ async function checkGender(name) {
 }
 
 async function getGenderInfoByName(name) {
-    const serverUrl = 'https://api.genderizes.io';
+    const serverUrl = 'https://api.genderize.io';
     const url = `${serverUrl}?name=${name}`;
     const response = await fetch(url);
     return (await response.json()) || {};
