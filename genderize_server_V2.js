@@ -3,8 +3,12 @@ const server = http.createServer().listen(3000); // создание серве�
 
 server.on('request', async (req, res) => {
     try {
-        let userName =
-            req.url === '/favicon.ico' ? res.end() : req.url.substring(1);
+        let userName;
+        console.log(req.url);
+        if (req.url === '/favicon.ico') {
+            return res.end(); // Игнорируем запросы на favicon.ico
+        }
+        userName = req.url.substring(1);
 
         const result = await checkGender(userName);
 
@@ -27,7 +31,7 @@ async function checkGender(name) {
 }
 
 async function getGenderInfoByName(name) {
-    const serverUrl = 'https://api.genderizes.io';
+    const serverUrl = 'https://api.genderize.io';
     const url = `${serverUrl}?name=${name}`;
     const response = await fetch(url);
     return (await response.json()) || {};
