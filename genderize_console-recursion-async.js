@@ -15,9 +15,10 @@ async function getGenderResult() {
 
         const result = await checkGender(name.trim()); // trim() убирает возможные пробелы перед и после слова
         console.log(result);
-        getGenderResult(); // запускаем функцию рекурсивно, чтобы после ответа программа задавала вопрос заново
     } catch (error) {
         console.error('Error: ', error.message);
+    } finally {
+        getGenderResult(); // запускаем функцию рекурсивно, чтобы после ответа программа задавала вопрос заново
     }
 }
 
